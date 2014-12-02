@@ -28,7 +28,7 @@ At the moment, `browser-launcher2` supports following browsers on Windows, Unix 
 - IE (Windows only)
 - Opera
 - Safari
-- PhantomJS (Linux and OS X only)
+- PhantomJS
 
 ## Install
 
