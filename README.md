@@ -8,6 +8,10 @@ the proxy configuration on the fly.
 
 It's a fork of [substack/browser-launcher](https://github.com/substack/browser-launcher) repository which seems to be no longer maintained.
 
+## Differences from *browser-launcher2*
+- Has support for Firefox Developer Edition (under 'firefox') and Chrome Canary (under 'canary')
+- Firefox Developer Edition and Chrome Canary support is only for OSX
+
 ## Differences from *browser-launcher*
 
 - contains fixes and pull requests for unresolved issues reported in original repository
