@@ -5,7 +5,7 @@ launcher( function( err, launch ) {
 		return console.error( err );
 	}
 
-	launch( 'http://cksource.com/', process.env.BROWSER || 'chrome', function( err, instance ) {
+	launch( process.env.URL || 'http://cksource.com/', process.env.BROWSER || 'chrome', function( err, instance ) {
 		if ( err ) {
 			return console.error( err );
 		}
