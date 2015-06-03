@@ -17,8 +17,8 @@ function getLauncher( configFile, callback ) {
 		callback = configFile;
 		configFile = configModule.defaultConfigFile;
 	} else if ( !configFile ) {
-    configFile = configModule.defaultConfigFile;
-  }
+		configFile = configModule.defaultConfigFile;
+	}
 
 	configModule.read( configFile, function( err, config ) {
 		if ( !config ) {
@@ -92,8 +92,8 @@ getLauncher.update = function( configFile, callback ) {
 		callback = configFile;
 		configFile = configModule.defaultConfigFile;
 	} else if ( !configFile ) {
-    configFile = configModule.defaultConfigFile;
-  }
+		configFile = configModule.defaultConfigFile;
+	}
 
 	detect( function( browsers ) {
 		createProfiles( browsers, path.dirname( configFile ), function( err ) {

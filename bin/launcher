@@ -4,52 +4,23 @@ var meow				= require('meow'),
 		api					= require('../index'),
 		pkg					= require('../package.json'),
 		prettyjson	= require('prettyjson'),
-		exitHook		= require('exit-hook');
-
-var minimist = {
-	alias: {
-		// Flags
-		b: 'browser',
-		p: 'proxy',		// or --no-proxy
-		d: 'detached',
-		H: 'headless',
-		c: 'config',
-
-		// Commands
-		u: 'update',
-		h: 'help',
-		v: 'version'
-	},
-	// Split argv into launcher options and browser arguments
-	'--': true,
-	boolean: [ 'detached', 'headless' ],
-	string: [ 'config' ],
-	default: {
-		browser: 'chrome'
-	}
-};
-
-var help = [
-	'List browsers',	'> browser-launcher',
-	'Launch browser',	'> browser-launcher [ options ] url [ -- args ]',
-	render({
-		'--browser   -b .. ': 'Name of browser to launch (chrome by default)',
-		'--proxy     -p .. ': 'Proxy server URI',
-		'--detached  -d    ': 'Keep browser open after killing script',
-		'--headless  -H    ': 'Enable headless mode (requires Xvfb)'
-	}),
-	'Miscellaneous', render({
-		'--config    -c .. ': 'Path to custom configuration file',
-		'--update    -u    ': 'Update the cache',
-		'--help      -h    ': 'Show this help and exit',
-		'--version   -v    ': 'Print version and exit'
-	})
-].join('\n\n');
-
-// Meow takes care of --help and --version
-var cli = meow({ pkg: pkg, help: help }, minimist),
+		exitHook		= require('exit-hook'),
+		minimist = {
+			alias: {
+				b: 'browser',  p: 'proxy',
+				d: 'detached', H: 'headless',
+				c: 'config',   u: 'update',
+				h: 'help',     v: 'version'
+			},
+			'--': true, // Split argv into options and browser arguments
+			boolean:	[ 'detached', 'headless' ],
+			string:		[ 'config' ],
+			default:	{ browser: 'chrome' }
+		},
+		cli = meow({ pkg: pkg, help: help() }, minimist),
 		urls = cli.input,
-		flags = cli.flags;
+		flags = cli.flags
+;
 
 // Additional browser arguments, everything after "--"
 flags.options = flags[''];
@@ -124,6 +95,25 @@ function detach(instance) {
 	child.stdin.unref();
 	child.stdout.unref();
 	child.stderr.unref();
+}
+
+function help() {
+	return [
+		'List browsers',	'> browser-launcher',
+		'Launch browser',	'> browser-launcher [ options ] url [ -- args ]',
+		render({
+			'--browser   -b .. ': 'Name of browser to launch (chrome by default)',
+			'--proxy     -p .. ': 'Proxy server URI',
+			'--detached  -d    ': 'Keep browser open after killing script',
+			'--headless  -H    ': 'Enable headless mode (requires Xvfb)'
+		}),
+		'Miscellaneous', render({
+			'--config    -c .. ': 'Path to custom configuration file',
+			'--update    -u    ': 'Update the cache',
+			'--help      -h    ': 'Show this help and exit',
+			'--version   -v    ': 'Print version and exit'
+		})
+	].join('\n\n');
 }
 
 // Temporary, somewhat pretty output
