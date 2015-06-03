@@ -13,6 +13,7 @@ var minimist = {
 		p: 'proxy',		// or --no-proxy
 		d: 'detached',
 		H: 'headless',
+		c: 'config',
 
 		// Commands
 		u: 'update',
@@ -22,6 +23,7 @@ var minimist = {
 	// Split argv into launcher options and browser arguments
 	'--': true,
 	boolean: [ 'detached', 'headless' ],
+	string: [ 'config' ],
 	default: {
 		browser: 'chrome'
 	}
@@ -37,6 +39,7 @@ var help = [
 		'--headless  -H    ': 'Enable headless mode (requires Xvfb)'
 	}),
 	'Miscellaneous', render({
+		'--config    -c .. ': 'Path to custom configuration file',
 		'--update    -u    ': 'Update the cache',
 		'--help      -h    ': 'Show this help and exit',
 		'--version   -v    ': 'Print version and exit'
@@ -54,7 +57,7 @@ flags.options = flags[''];
 if (flags.update) {
 	log('Updating the browser cache..');
 
-	api.update(function(err, browsers) {
+	api.update(flags.config, function(err, browsers) {
 		if (err) {
 			return console.error(err);
 		}
@@ -68,7 +71,7 @@ if (flags.update) {
 	api.detect(log);
 } else {
 	// Launch
-	api(function(err, launch) {
+	api(flags.config, function(err, launch) {
 		if (err) {
 			return console.error(err);
 		}
