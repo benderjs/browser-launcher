@@ -4,21 +4,27 @@
 	"description": "Detect, launch and stop browser versions",
 	"main": "index.js",
 	"scripts": {
-		"lint": "jscs . && jshint index.js lib/ example/"
+		"lint": "jscs . bin/launcher && jshint index.js lib/ example/ bin/launcher"
+	},
+	"bin": {
+		"browser-launcher": "bin/launcher"
 	},
 	"directories": {
 		"example": "example",
 		"res": "res"
 	},
 	"dependencies": {
+		"exit-hook": "~1.1.1",
 		"headless": "^0.1.7",
 		"lodash": "^2.4.1",
+		"meow": "~3.1.0",
 		"mkdirp": "^0.5.0",
 		"osenv": "^0.1.0",
 		"plist": "^1.0.1",
-		"win-detect-browsers": "^1.0.1",
+		"prettyjson": "~1.1.2",
+		"rimraf": "~2.2.8",
 		"uid": "0.0.2",
-		"rimraf": "~2.2.8"
+		"win-detect-browsers": "~2.1.0"
 	},
 	"repository": {
 		"type": "git",

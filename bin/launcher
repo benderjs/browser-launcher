@@ -1,0 +1,141 @@
+#!/usr/bin/env node
+
+var meow				= require('meow'),
+		api					= require('../index'),
+		pkg					= require('../package.json'),
+		prettyjson	= require('prettyjson'),
+		exitHook		= require('exit-hook');
+
+var minimist = {
+	alias: {
+		// Flags
+		b: 'browser',
+		p: 'proxy',		// or --no-proxy
+		d: 'detached',
+		H: 'headless',
+
+		// Commands
+		u: 'update',
+		h: 'help',
+		v: 'version'
+	},
+	// Split argv into launcher options and browser arguments
+	'--': true,
+	boolean: [ 'detached', 'headless' ],
+	default: {
+		browser: 'chrome'
+	}
+};
+
+var help = [
+	'List browsers',	'> browser-launcher',
+	'Launch browser',	'> browser-launcher [ options ] url [ -- args ]',
+	render({
+		'--browser   -b .. ': 'Name of browser to launch (chrome by default)',
+		'--proxy     -p .. ': 'Proxy server URI',
+		'--detached  -d    ': 'Keep browser open after killing script',
+		'--headless  -H    ': 'Enable headless mode (requires Xvfb)'
+	}),
+	'Miscellaneous', render({
+		'--update    -u    ': 'Update the cache',
+		'--help      -h    ': 'Show this help and exit',
+		'--version   -v    ': 'Print version and exit'
+	})
+].join('\n\n');
+
+// Meow takes care of --help and --version
+var cli = meow({ pkg: pkg, help: help }, minimist),
+		urls = cli.input,
+		flags = cli.flags;
+
+// Additional browser arguments, everything after "--"
+flags.options = flags[''];
+
+if (flags.update) {
+	log('Updating the browser cache..');
+
+	api.update(function(err, browsers) {
+		if (err) {
+			return console.error(err);
+		}
+
+		log('Done.\n');
+		log(browsers);
+	});
+} else if (!urls.length) {
+	// No arguments - list all available browsers
+	log('Available browsers\n');
+	api.detect(log);
+} else {
+	// Launch
+	api(function(err, launch) {
+		if (err) {
+			return console.error(err);
+		}
+
+		launch(urls[0], flags, function(err, instance) {
+			if (err) {
+				return console.error(err);
+			}
+
+			log('Instance started with PID %d: %s\n', instance.pid, instance.command);
+			log('  ' + instance.args.join('\n  ') + '\n');
+
+			if (flags.detached) {
+				detach(instance);
+			} else {
+				bind(instance);
+			}
+		});
+	});
+}
+
+// Helpers
+
+function bind(instance) {
+	var stopped = false;
+
+	instance.on('stop', function( code ) {
+		stopped = true;
+		log('Instance stopped with exit code:', code);
+		process.exit(code);
+	});
+
+	// Clean exit
+	exitHook(function() {
+		if (stopped) {
+			return;
+		}
+
+		log('Stopping instance..');
+		instance.stop();
+	});
+}
+
+function detach(instance) {
+	log('Detaching.');
+
+	var child = instance.process;
+
+	child.unref();
+	child.stdin.unref();
+	child.stdout.unref();
+	child.stderr.unref();
+}
+
+// Temporary, somewhat pretty output
+function log(data) {
+	var args = [].slice.call(arguments);
+
+	if (typeof data !== 'string') {
+		args[0] = render(data);
+	}
+
+	console.log.apply(console, args);
+}
+
+function render(data) {
+	return prettyjson.render(data, {
+		dashColor: 'white'
+	});
+}
