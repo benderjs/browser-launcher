@@ -6,6 +6,7 @@ var meow				= require('meow'),
 		prettyjson	= require('prettyjson'),
 		exitHook		= require('exit-hook'),
 		chalk       = require('chalk'),
+		config      = require('../lib/config'),
 		minimist = {
 			alias: {
 				b: 'browser',  p: 'proxy',
@@ -26,21 +27,35 @@ var meow				= require('meow'),
 // Additional browser arguments, everything after "--"
 flags.options = flags[''];
 
+flags.config = config.path(flags.config);
+
+log('Using', flags.config);
+
 if (flags.update) {
 	log('Updating the browser cache..');
 
-	api.update(flags.config, function(err, browsers) {
+	api.update(flags.config, function(err) {
 		if (err) {
 			return console.error(err);
 		}
 
 		log('Done.\n');
-		log(browsers);
 	});
 } else if (!urls.length) {
 	// No arguments - list all available browsers
 	log('Available browsers\n');
-	api.detect(log);
+
+	api.config(flags.config, function(err, config) {
+		if (err) {
+			return console.error(err);
+		}
+
+		config.browsers.forEach(function(b) {
+			log( chalk.cyan(b.name + ' ' + b.version) );
+			log( b.command );
+			log( b.profile, '\n' );
+		});
+	});
 } else {
 	// Launch
 	api(flags.config, function(err, launch) {

@@ -1,5 +1,4 @@
-var path = require( 'path' ),
-	_ = require( 'lodash' ),
+var _ = require( 'lodash' ),
 	configModule = require( './lib/config' ),
 	detect = require( './lib/detect' ),
 	run = require( './lib/run' ),
@@ -15,24 +14,16 @@ var path = require( 'path' ),
 function getLauncher( configFile, callback ) {
 	if ( typeof configFile === 'function' ) {
 		callback = configFile;
-		configFile = configModule.defaultConfigFile;
-	} else if ( !configFile ) {
-		configFile = configModule.defaultConfigFile;
+		configFile = null;
 	}
 
-	configModule.read( configFile, function( err, config ) {
-		if ( !config ) {
-			getLauncher.update( configFile, function( err, config ) {
-				if ( err ) {
-					callback( err );
-				} else {
-					callback( null, wrap( config ) );
-				}
-			} );
+	getLauncher.config( configFile, function( err, config ) {
+		if ( err ) {
+			callback( err );
 		} else {
 			callback( null, wrap( config ) );
 		}
-	} );
+	});
 
 	function wrap( config ) {
 		var res = launch.bind( null, config );
@@ -71,7 +62,7 @@ function getLauncher( configFile, callback ) {
 }
 
 /**
- * Detect available browsers
+ * Detect available browsers (bypassing cache)
  * @param {Function} callback Callback function
  */
 getLauncher.detect = function( callback ) {
@@ -83,6 +74,26 @@ getLauncher.detect = function( callback ) {
 };
 
 /**
+ * Get or create configuration
+ * @param {String}   configDir Path to the configuration file
+ * @param {Function} callback Callback function
+ */
+getLauncher.config = function(configFile, callback ) {
+	if ( typeof configFile === 'function' ) {
+		callback = configFile;
+		configFile = null;
+	}
+
+	configModule.read( configFile, function( err, config ) {
+		if ( !config ) {
+			getLauncher.update( configFile, callback );
+		} else {
+			callback( null, config );
+		}
+	} );
+};
+
+/**
  * Update the browsers cache and create new profiles if necessary
  * @param {String}   configDir Path to the configuration file
  * @param {Function} callback  Callback function
@@ -90,13 +101,11 @@ getLauncher.detect = function( callback ) {
 getLauncher.update = function( configFile, callback ) {
 	if ( typeof configFile === 'function' ) {
 		callback = configFile;
-		configFile = configModule.defaultConfigFile;
-	} else if ( !configFile ) {
-		configFile = configModule.defaultConfigFile;
+		configFile = null;
 	}
 
 	detect( function( browsers ) {
-		createProfiles( browsers, path.dirname( configFile ), function( err ) {
+		createProfiles( browsers, configModule.dir( configFile ), function( err ) {
 			if ( err ) {
 				return callback( err );
 			}
