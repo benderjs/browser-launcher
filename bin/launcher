@@ -14,7 +14,7 @@ var meow				= require('meow'),
 			},
 			'--': true, // Split argv into options and browser arguments
 			boolean:	[ 'detached', 'headless' ],
-			string:		[ 'config' ],
+			string:		[ 'config', 'proxy' ],
 			default:	{ browser: 'chrome' }
 		},
 		cli = meow({ pkg: pkg, help: help() }, minimist),
