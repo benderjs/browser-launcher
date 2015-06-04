@@ -51,8 +51,8 @@ function getLauncher( configFile, callback ) {
 
 		options = options || {};
 
-		var version = options.version || options.browser.split( '/' )[ 1 ] || '*',
-			name = options.browser.toLowerCase().split( '/' )[ 0 ],
+		var version = options.version || options.browser.split( /\/|@/ )[ 1 ] || '*',
+			name = options.browser.toLowerCase().split( /\/|@/ )[ 0 ],
 			runner = run( config, name, version );
 
 		if ( !runner ) {
