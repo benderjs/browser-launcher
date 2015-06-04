@@ -5,6 +5,7 @@ var meow				= require('meow'),
 		pkg					= require('../package.json'),
 		prettyjson	= require('prettyjson'),
 		exitHook		= require('exit-hook'),
+		chalk       = require('chalk'),
 		minimist = {
 			alias: {
 				b: 'browser',  p: 'proxy',
@@ -14,7 +15,7 @@ var meow				= require('meow'),
 			},
 			'--': true, // Split argv into options and browser arguments
 			boolean:	[ 'detached', 'headless' ],
-			string:		[ 'config', 'proxy' ],
+			string:		[ 'config', 'proxy', 'browser' ],
 			default:	{ browser: 'chrome' }
 		},
 		cli = meow({ pkg: pkg, help: help() }, minimist),
@@ -98,22 +99,46 @@ function detach(instance) {
 }
 
 function help() {
+	var cmd  = chalk.cyan,
+			args = chalk.yellow;
+
 	return [
-		'List browsers',	'> browser-launcher',
-		'Launch browser',	'> browser-launcher [ options ] url [ -- args ]',
-		render({
-			'--browser   -b .. ': 'Name of browser to launch (chrome by default)',
-			'--proxy     -p .. ': 'Proxy server URI',
-			'--detached  -d    ': 'Keep browser open after killing script',
-			'--headless  -H    ': 'Enable headless mode (requires Xvfb)'
+		h('List available browsers'), cmd('> browser-launcher2'),
+
+		h('Launch a browser'),
+		cmd('> browser-launcher2') + args(' [ options ] url [ -- arguments ]'),
+
+		opts({
+			'--browser   -b ..   ': 'Name of browser to launch (chrome by default)',
+			'--proxy     -p ..   ': 'Proxy server URI',
+			'--detached  -d      ': 'Keep browser open after killing script',
+			'--headless  -H      ': 'Enable headless mode (requires Xvfb)'
 		}),
-		'Miscellaneous', render({
-			'--config    -c .. ': 'Path to custom configuration file',
-			'--update    -u    ': 'Update the cache',
-			'--help      -h    ': 'Show this help and exit',
-			'--version   -v    ': 'Print version and exit'
-		})
+
+		'Additional arguments after ' + args('--') + ' are passed to the browser as-is.',
+
+		h('Miscellaneous'), opts({
+			'--config    -c ..   ': 'Path to custom configuration file',
+			'--update    -u      ': 'Update the cache and exit',
+			'--help      -h      ': 'Show this help and exit',
+			'--version   -v      ': 'Print version and exit'
+		}),
+
+		h('Examples'),
+		cmd('> browser-launcher2 ') + '-d -b chrome@45 https://github.com\n' +
+		cmd('> browser-launcher2 ') + '-b chrome localhost -- --remote-debugging-port=9222\n' +
+		cmd('> browser-launcher2 ') + '-b firefox -p proxy:3000 google.com'
 	].join('\n\n');
+
+	function h(str) {
+		return chalk.bgCyan.bold('B') + ' ' + str + ' ';
+	}
+
+	function opts(obj) {
+		return Object.keys(obj).map(function(k) {
+			return args(k) + obj[k];
+		}).join('\n');
+	}
 }
 
 // Temporary, somewhat pretty output
