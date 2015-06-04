@@ -12,11 +12,12 @@ It's a fork of [substack/browser-launcher](https://github.com/substack/browser-l
 
 ## Differences from *browser-launcher*
 
-- contains fixes and pull requests for unresolved issues reported in original repository
+- Contains fixes and pull requests for unresolved issues reported in original repository
 - `launcher.browsers` is an array of local browsers only, not an object as it was before
 - `launch` callback returns an `Instance` instead of a child process, see API section for more details
-- uses [win-detect-browsers](https://github.com/vweevers/win-detect-browsers) for browser detection on Windows
-- more browsers supported
+- Uses [win-detect-browsers](https://github.com/vweevers/win-detect-browsers) for browser detection on Windows
+- More browsers supported
+- Includes a CLI
 
 ## Supported browsers
 
@@ -207,6 +208,64 @@ Updates the browsers cache file (`~/.config/browser-launcher/config.json` is no 
 **Parameters:**
 - *String* `configFile` - path to the configuration file *Optional*
 - *Function* `callback(err, browsers)` - function called with found browsers and errors (if any)
+
+## CLI
+
+### `browser-launcher2 [ options ] url [ -- arguments ]`
+
+Without any arguments, the CLI will list the available browsers. The available options are:
+
+#### `--browser/-b name[@version]`
+
+Lowercase name and version of browser to launch (chrome by default). Version can be partial (`chrome@45`) or contain wildcards (`chrome@45.x`). If no version is specified, the latest will be used.
+
+#### `--proxy/-p URI`
+
+Proxy server URI.
+
+#### `--detached/-d`
+
+Keep browser open after killing script.
+
+#### `--headless/-H`
+
+Enable headless mode (requires Xvfb).
+
+#### `arguments`
+
+Additional arguments after `--` are passed to the browser as-is, see the example below.
+
+### Miscellaneous
+
+#### `--config/-c path`
+
+Path to custom configuration file.
+
+#### `--update/-u`
+
+Update the cache and exit.
+
+#### `--help/-h`
+
+Show usage info and exit.
+
+#### `--version/-v`
+
+Print version and exit.
+
+#### Examples
+
+Open github.com in Google Chrome 45.*, detached mode.
+
+`browser-launcher2 -d -b chrome@45 https://github.com`
+
+Add additional arguments:
+
+`browser-launcher2 -b chrome localhost -- --remote-debugging-port=9222`
+
+Instruct the browser to use a proxy:
+
+`browser-launcher2 -b firefox -p proxy:3000 google.com`
 
 ## Known Issues
 
