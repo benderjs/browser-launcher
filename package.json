@@ -7,7 +7,7 @@
 		"lint": "jscs . bin/launcher && jshint index.js lib/ example/ bin/launcher"
 	},
 	"bin": {
-		"browser-launcher": "bin/launcher"
+		"browser-launcher2": "bin/launcher"
 	},
 	"directories": {
 		"example": "example",
