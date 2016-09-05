@@ -31,6 +31,7 @@ The goal for this module is to support all major browsers on every desktop platf
 At the moment, `browser-launcher2` supports following browsers on Windows, Unix and OS X:
 
 - Chrome
+- Chrome Canary
 - Chromium
 - Firefox
 - IE (Windows only)
