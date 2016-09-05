@@ -1,5 +1,11 @@
 # browser-launcher2
 
+## ☠ This package is no longer maintained ☠
+
+Read more in: https://github.com/benderjs/browser-launcher2/issues/57
+
+----
+
 [![Get it on npm](https://nodei.co/npm/browser-launcher2.png?compact=true)](https://www.npmjs.org/package/browser-launcher2)
 
 Detect the browser versions available on your system and launch them in an
